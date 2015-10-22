@@ -15,6 +15,16 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
   Meteor.startup(() => {
+    // Create demonstration admin user in users and privileges
+    if(! Meteor.users.findOne({username: 'admin'})) {
+      console.log('creating admin user')
+      const userId = Accounts.createUser({
+        username: 'admin',
+        password: 'admin',
+      });
+      Privileges.insert({userId, admin:true});
+    }
+
     // TODO: publish Pages visibile to current user
   });
 }
@@ -72,7 +82,7 @@ Meteor.methods({
   getQuiz(quizId) {
     const quiz = Quizzes.findOne(quizId);
     const questionIds = quiz && quiz.questions || [];
-    quiz.questions_ = Questions.find({questionId: {$in: questionIds}}).fetch();
+    quiz.questions = Questions.find({questionId: {$in: questionIds}}).fetch();
     return quiz;
   },
 });
