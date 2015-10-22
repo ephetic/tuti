@@ -74,6 +74,5 @@ Meteor.methods({
     const questionIds = quiz && quiz.questions || [];
     quiz.questions_ = Questions.find({questionId: {$in: questionIds}}).fetch();
     return quiz;
-  })
-  }
+  },
 });
