@@ -59,7 +59,8 @@ Meteor.methods({
       }
     }).map(user => {
       const privs = Privileges.findOne({userId: user._id});
-      Object.keys(privs).map(key => {
+      console.log(user, privs);
+      Object.keys(privs || {}).forEach(key => {
         if(privs.hasOwnProperty(key) && key !== '_id') {
           user[key] = privs[key];
         }
@@ -80,9 +81,21 @@ Meteor.methods({
     return;
   },
   getQuiz(quizId) {
-    const quiz = Quizzes.findOne(quizId);
-    const questionIds = quiz && quiz.questions || [];
+    let quiz = Quizzes.findOne({quizId});
+    if (! quiz) {
+      quiz = {quizId, title: 'New Quiz', questions: [], available: false};
+      Quizzes.insert(quiz);
+    }
+    console.log('quiz', quiz);
+    const questionIds = quiz.questions;
     quiz.questions = Questions.find({questionId: {$in: questionIds}}).fetch();
     return quiz;
   },
+  updateQuiz(quizId, update) {
+    Quizzes.update({quizId}, update, {upsert: true});
+  },
+  addQuestion(question) {
+    return Questions.insert(question);
+  }
+
 });

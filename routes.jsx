@@ -47,6 +47,7 @@ FlowRouter.route('/page/:pageId', {
 });
 
 FlowRouter.route('/page/:pageId/edit', {
+  triggersEnter: [checkAdmin],
   action(params) {
     Meteor.call('getPage', params.pageId, (err, page) => {
       const text = page && page.text || '';
@@ -71,23 +72,21 @@ FlowRouter.route('/quiz/:quizId', {
     Meteor.call('getQuiz', params.quizId, (err, quiz) => {
       console.log(quiz);
       const privs = Session.get('userPrivileges');
-      if (! quiz && privs && privs.teacher) {
-        return FlowRouter.go('/quiz/' + params.quizId + '/edit');
+      if (privs.student && ! quiz.available) {
+        return FlowRouter.go('/');
       }
-
-      let content = {};
-      if (privs.student && quiz && quiz.available) {
-        const content = (<Quiz {...quiz}/>);
-      }
+      const content = <Quiz {...params} {...quiz} privs={privs}/>;
       return ReactLayout.render(MainLayout, {content});
     });
   }
 });
 
 FlowRouter.route('/quiz/:quizId/edit', {
+  triggersEnter: [checkAdmin],
   action(params) {
     Meteor.call('getQuiz', params.quizId, (err, quiz) => {
-      const content = (<QuizEditor {...quiz}/>);
+      const privs = Session.get('userPrivileges');
+      const content = (<QuizEditor {...quiz} privs={privs}/>);
       ReactLayout.render(MainLayout, {content});
     });
   },

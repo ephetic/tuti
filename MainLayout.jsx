@@ -8,7 +8,7 @@ MainLayout = React.createClass({
           <div className="topbar_header_navbar">
             <AccountsUIWrapper />
             <a href="/page/home">Home</a>
-            {privs.admin || privs.teacher ? 
+            {privs && (privs.admin || privs.teacher) ? 
               <a href="/admin">Admin</a> : ''}
           </div>
         </header>

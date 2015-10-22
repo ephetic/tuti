@@ -1,9 +1,22 @@
 QuizEditor = React.createClass({
   propTypes: {
-    // users: React.PropTypes.array.isRequired,
+    questions: React.PropTypes.array.isRequired,
+    title: React.PropTypes.string.isRequired,
   },
 
+  // list questions
+  // add questions
+  // edit delete questions
+
   render() {
-    return <div>QuizEditor</div>
+    const questions = this.props.questions;
+    return (
+      <div>
+        <div>Quiz: {this.props.title}</div>
+        {questions && questions.map(question => {
+          return <Question {...question} />;
+        })}
+      </div>
+    );
   }
 });
