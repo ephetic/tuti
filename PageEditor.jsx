@@ -50,6 +50,13 @@ PageEditor = React.createClass({
   },
 
   onSave() {
+    const text = this.refs.textarea.getDOMNode().value;
+    Meteor.call('savePage', this.props.pageId, text);
+    this.onBack();
+  },
+
+  onBack() {
+    FlowRouter.go('/page/' + this.props.pageId);
   },
 
   render() {
@@ -76,6 +83,7 @@ PageEditor = React.createClass({
           className="PageEditor_textarea"
           defaultValue={this.props.text}></textarea>
         <button onClick={this.onSave}>Save</button>
+        <button onClick={this.onBack}>Back</button>
       </div>);
   },
 });

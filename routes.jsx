@@ -25,7 +25,9 @@ FlowRouter.route('/page/:pageId', {
       if (! page) {
         return FlowRouter.go('/page/' + params.pageId + '/edit');
       }
-      const content = (<Page {...params} text={page.text}/>);
+      const privs = Session.get('userPrivileges');
+      const content = (<Page {...params} text={page.text} 
+        userCanEdit={privs && privs.teacher}/>);
       ReactLayout.render(MainLayout, {content});
     });
   },

@@ -1,33 +1,19 @@
 Pages = new Mongo.Collection('pages');
 Privileges = new Mongo.Collection('privileges');
 
-// Pages.insert({
-//   pageId: 'home',
-//   text: [ '# Select Grade Level\n',
-//           '- [Grade 9](Grade-9)',
-//           '- [Grade 10](Grade-10)',
-//           '- [Grade 11](Grade-11)',
-//           '- [Grade 12](Grade-12)',
-//         ].join('\n'),
-//   createdAt: new Date(),
-// });
-
 if (Meteor.isClient) {
   Accounts.ui.config({
     passwordSignupFields: 'USERNAME_ONLY',
   });
 
-  // Meteor.startup(() => {
-  //   React.render(
-  //     <App />,
-  //     document.getElementById('render-target')
-  //   );
-  // });
+  Meteor.call('getPrivileges', (err, privs) => {
+    Session.set('userPrivileges', privs);
+  });
 }
 
 if (Meteor.isServer) {
   Meteor.startup(() => {
-    // code to run on server at startup
+    // TODO: publish Pages visibile to current user
   });
 }
 
@@ -37,4 +23,19 @@ Meteor.methods({
       return Pages.findOne({pageId});
     }
   },
+  savePage(pageId, text) {
+    if (Meteor.userId()) {
+      const update = {
+        pageId,
+        text,
+        createdAt: new Date(),
+        createdBy: Meteor.userId(),
+      };
+      Pages.update({pageId}, update, {upsert: true});
+    }
+  },
+  getPrivileges() {
+    const privs = Privileges.findOne({userId: Meteor.userId()});
+    return privs;
+  }
 });
