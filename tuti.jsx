@@ -37,5 +37,34 @@ Meteor.methods({
   getPrivileges() {
     const privs = Privileges.findOne({userId: Meteor.userId()});
     return privs;
-  }
+  },
+  listUsers() {
+    return Meteor.users.find({}, {
+      fields: {
+        _id: 1,
+        username: 1,
+        profile: 1,
+      }
+    }).map(user => {
+      const privs = Privileges.findOne({userId: user._id});
+      Object.keys(privs).map(key => {
+        if(privs.hasOwnProperty(key) && key !== '_id') {
+          user[key] = privs[key];
+        }
+      });
+      return user;
+    });
+  },
+  updateUserPrivileges(user) {
+    if(! user.admin) {
+      throw new Meteor.Error('not-authorized');
+    }
+    Privileges.update({userId:user.userId}, {
+      userId:user.userId,
+      admin: user.admin,
+      student: user.student,
+      teacher: user.teacher,
+    });
+    return;
+  },
 });
