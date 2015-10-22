@@ -15,6 +15,7 @@ function checkAdmin() {
 
 FlowRouter.notFound = {
   action() {
+    console.log('notFound');
     FlowRouter.go('/page/home');
   },
 };
@@ -34,10 +35,10 @@ FlowRouter.route('/', {
 FlowRouter.route('/page/:pageId', {
   action(params) {
     Meteor.call('getPage', params.pageId, (err, page) => {
+      const privs = Session.get('userPrivileges');
       if (! page && privs && privs.teacher) {
         return FlowRouter.go('/page/' + params.pageId + '/edit');
       }
-      const privs = Session.get('userPrivileges');
       const content = (<Page {...params} text={page && page.text || ''} 
         userCanEdit={privs && privs.teacher}/>);
       ReactLayout.render(MainLayout, {content});
@@ -64,3 +65,31 @@ FlowRouter.route('/admin', {
     });
   }
 });
+
+FlowRouter.route('/quiz/:quizId', {
+  action(params) {
+    Meteor.call('getQuiz', params.quizId, (err, quiz) => {
+      console.log(quiz);
+      const privs = Session.get('userPrivileges');
+      if (! quiz && privs && privs.teacher) {
+        return FlowRouter.go('/quiz/' + params.quizId + '/edit');
+      }
+
+      let content = {};
+      if (privs.student && quiz && quiz.available) {
+        const content = (<Quiz {...quiz}/>);
+      }
+      return ReactLayout.render(MainLayout, {content});
+    });
+  }
+});
+
+FlowRouter.route('/quiz/:quizId/edit', {
+  action(params) {
+    Meteor.call('getQuiz', params.quizId, (err, quiz) => {
+      const content = (<QuizEditor {...quiz}/>);
+      ReactLayout.render(MainLayout, {content});
+    });
+  },
+});
+

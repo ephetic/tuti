@@ -23,7 +23,8 @@ Admin = React.createClass({
           </tr>
           {this.props.users && this.props.users.map(user => (
             <tr>
-              <td>{user.username}</td>
+              {/* TODO: add link to user report page */}
+              <td>{user.username}</td> 
               <td><input type="checkbox" checked={user.student} onClick={() => this.onClick(user, 'student')}/></td>
               <td><input type="checkbox" checked={user.teacher} onClick={() => this.onClick(user, 'teacher')}/></td>
               <td><input type="checkbox" checked={user.admin} onClick={() => this.onClick(user, 'admin')}/></td>

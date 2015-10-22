@@ -1,5 +1,7 @@
 Pages = new Mongo.Collection('pages');
 Privileges = new Mongo.Collection('privileges');
+Quizzes = new Mongo.Collection('quizzes');
+Questions = new Mongo.Collection('questions');
 
 if (Meteor.isClient) {
   Accounts.ui.config({
@@ -67,4 +69,11 @@ Meteor.methods({
     });
     return;
   },
+  getQuiz(quizId) {
+    const quiz = Quizzes.findOne(quizId);
+    const questionIds = quiz && quiz.questions || [];
+    quiz.questions_ = Questions.find({questionId: {$in: questionIds}}).fetch();
+    return quiz;
+  })
+  }
 });

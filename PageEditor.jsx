@@ -51,8 +51,7 @@ PageEditor = React.createClass({
 
   onSave() {
     const text = this.refs.textarea.getDOMNode().value;
-    Meteor.call('savePage', this.props.pageId, text);
-    this.onBack();
+    Meteor.call('savePage', this.props.pageId, text, () => this.onBack());
   },
 
   onBack() {
